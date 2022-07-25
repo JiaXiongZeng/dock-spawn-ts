@@ -13,6 +13,8 @@ import { EventHandler } from './EventHandler.js';
  */
 export class TabHost {
     displayCloseButton: boolean;
+    //家雄加
+    displayMaximizeButton: boolean;
     dockManager: DockManager;
     tabStripDirection: TabHostDirection;
     hostElement: HTMLDivElement;
@@ -28,7 +30,7 @@ export class TabHost {
     mouseDownHandler: EventHandler;
     focusHandler: EventHandler;
 
-    constructor(dockManager: DockManager, tabStripDirection: TabHostDirection, displayCloseButton?: boolean) {
+    constructor(dockManager: DockManager, tabStripDirection: TabHostDirection, displayCloseButton?: boolean, displayMaximizeButton?: boolean) {
         /**
          * Create a tab host with the tab strip aligned in the [tabStripDirection] direciton
          * Only TabHost.DIRECTION_BOTTOM and TabHost.DIRECTION_TOP are supported
@@ -44,6 +46,8 @@ export class TabHost {
         this.dockManager = dockManager;
         this.tabStripDirection = tabStripDirection;
         this.displayCloseButton = displayCloseButton; // Indicates if the close button next to the tab handle should be displayed
+        //家雄加，是否要顯示最大化按鈕
+        this.displayMaximizeButton = displayMaximizeButton;
         this.pages = [];
         this.eventListeners = [];
         this.tabHandleListener = {

@@ -11,6 +11,7 @@ import { IDockContainer } from "./interfaces/IDockContainer.js";
 import { PanelType } from "./enums/PanelType.js";
 import { Dialog } from "./Dialog.js";
 import { TabPage } from './TabPage.js';
+import { DockNode } from "./DockNode.js";
 
 /**
  * This dock container wraps the specified element on a panel frame with a title bar and close button
@@ -38,8 +39,15 @@ export class PanelContainer implements IDockContainerWithSize {
     eventListeners: any[];
     undockInitiator: UndockInitiator;
     elementButtonClose: HTMLDivElement;
+    //家雄加入
+    elementButtonMaximize: HTMLDivElement;
     closeButtonClickedHandler: EventHandler;
     closeButtonTouchedHandler: EventHandler;
+    //家雄加入
+    isMaximized: boolean;
+    shadowPanel: PanelContainer;
+    maximizeButtonClickedHandler: EventHandler;
+    maximizeButtonTouchedHandler: EventHandler;
     mouseDownHandler: EventHandler;
     touchDownHandler: EventHandler;
     panelType: PanelType;
@@ -54,7 +62,17 @@ export class PanelContainer implements IDockContainerWithSize {
     _hideCloseButton: boolean;
     _grayOut: HTMLDivElement;
 
-    constructor(elementContent: HTMLElement, dockManager: DockManager, title?: string, panelType?: PanelType, hideCloseButton?: boolean) {
+    //家雄加
+    dockAt?: DockNode;
+    _hideMaximizeButton: boolean;
+    _previousPositon: Point;
+    _previousIsDialog: boolean;
+    _previousWidth: number;
+    _previousHeight: number;
+    //因為不一定是按放大縮小，所以Panel需要知道何時OnDock用來關閉多餘的ShadowPanel
+    _isMaximizeButtonClick: boolean;
+
+    constructor(elementContent: HTMLElement, dockManager: DockManager, title?: string, panelType?: PanelType, hideCloseButton?: boolean, hideMaximizeButton?: boolean) {
         if (!title)
             title = 'Panel';
         if (!panelType)
@@ -69,9 +87,14 @@ export class PanelContainer implements IDockContainerWithSize {
         this.minimumAllowedChildNodes = 0;
         this._floatingDialog = undefined;
         this.isDialog = false;
+        //這個參數可以控制Panel能不能Undock
         this._canUndock = dockManager._undockEnabled;
         this.eventListeners = [];
         this._hideCloseButton = hideCloseButton;
+        //家雄加
+        this._hideMaximizeButton = hideMaximizeButton;
+        //預設非最大化
+        this.isMaximized = false;
         this._initialize();
     }
 
@@ -119,6 +142,8 @@ export class PanelContainer implements IDockContainerWithSize {
         state.height = this.height;
         state.canUndock = this._canUndock;
         state.hideCloseButton = this._hideCloseButton;
+        //家雄加
+        state.hideMaximizeButton = this._hideCloseButton;
         state.panelType = this.panelType;
     }
 
@@ -128,6 +153,8 @@ export class PanelContainer implements IDockContainerWithSize {
         this.state = { width: state.width, height: state.height };
         this.canUndock(state.canUndock)
         this.hideCloseButton(state.hideCloseButton);
+        //家雄加
+        this.hideMaximizeButton(state.hideMaximizeButton);
         this.panelType = state.panelType;
     }
 
@@ -143,12 +170,23 @@ export class PanelContainer implements IDockContainerWithSize {
             this.elementContentWrapper.removeChild(this._grayOut);
             this.elementButtonClose.style.display = this._hideCloseButton ? 'none' : 'block';
             this._grayOut = null;
-            if (!this._hideCloseButton)
+            if (!this._hideCloseButton) {
                 this.eventListeners.forEach((listener) => {
                     if (listener.onHideCloseButton) {
                         listener.onHideCloseButton({ self: this, state: this._hideCloseButton });
                     }
                 });
+            }
+
+            //家雄加
+            this.elementButtonMaximize.style.display = this._hideMaximizeButton? 'none': 'block';
+            if(!this._hideMaximizeButton){
+                this.eventListeners.forEach((listener) => {
+                    if(listener.onHideMaximizeButton) {
+                        listener.onHideMaximizeButton({ self: this, state: this._hideMaximizeButton });
+                    }
+                });
+            }
         }
         else if (show && !this._grayOut) {
             this._grayOut = document.createElement('div');
@@ -158,6 +196,14 @@ export class PanelContainer implements IDockContainerWithSize {
             this.eventListeners.forEach((listener) => {
                 if (listener.onHideCloseButton) {
                     listener.onHideCloseButton({ self: this, state: true });
+                }
+            });
+
+            //家雄加
+            this.elementButtonMaximize.style.display = 'none';
+            this.eventListeners.forEach((listener) => {
+                if (listener.onHideMaximizeButton) {
+                    listener.onHideMaximizeButton({ self: this, state: true });
                 }
             });
         }
@@ -171,12 +217,19 @@ export class PanelContainer implements IDockContainerWithSize {
         this.elementTitleText = document.createElement('div');
         this.elementContentHost = document.createElement('div');
         this.elementButtonClose = document.createElement('div');
+        //家雄加入
+        this.elementButtonMaximize = document.createElement('div');
 
         this.elementPanel.appendChild(this.elementTitle);
         this.elementTitle.appendChild(this.elementTitleText);
         this.elementTitle.appendChild(this.elementButtonClose);
+        //家雄加入
+        this.elementTitle.appendChild(this.elementButtonMaximize);
         this.elementButtonClose.classList.add('panel-titlebar-button-close');
         this.elementButtonClose.style.display = this._hideCloseButton ? 'none' : 'block';
+        //家雄加入
+        this.elementButtonMaximize.classList.add('panel-titlebar-button-maximize');
+        this.elementButtonMaximize.style.display = this._hideMaximizeButton? 'none' : 'block';
 
         this.elementPanel.appendChild(this.elementContentHost);
 
@@ -198,6 +251,14 @@ export class PanelContainer implements IDockContainerWithSize {
             this.closeButtonTouchedHandler =
                 new EventHandler(this.elementButtonClose, 'touchstart', this.onCloseButtonClicked.bind(this));
         }
+
+        //家雄加入
+        if(!this._hideMaximizeButton){
+            this.maximizeButtonClickedHandler = 
+                new EventHandler(this.elementButtonMaximize, 'mousedown', this.onMaximizeButtonClicked.bind(this));
+            this.maximizeButtonTouchedHandler = 
+                new EventHandler(this.elementButtonMaximize, 'touchstart', this.onMaximizeButtonClicked.bind(this));
+        }        
 
         this.elementContentWrapper = document.createElement("div");
         this.elementContentWrapper.classList.add('panel-content-wrapper');
@@ -232,6 +293,17 @@ export class PanelContainer implements IDockContainerWithSize {
         this.eventListeners.forEach((listener) => {
             if (listener.onHideCloseButton) {
                 listener.onHideCloseButton({ self: this, state: state });
+            }
+        });
+    }
+
+    //家雄加入
+    hideMaximizeButton(state: boolean){
+        this._hideMaximizeButton = state;
+        this.elementButtonMaximize.style.display = state ? 'none': 'block';
+        this.eventListeners.forEach((listener) => {
+            if (listener.onHideMaximizeButton) {
+                listener.onHideMaximizeButton({ self: this, state: state });
             }
         });
     }
@@ -392,6 +464,90 @@ export class PanelContainer implements IDockContainerWithSize {
         e.preventDefault();
         e.stopPropagation();
         this.close();
+
+        //家雄加入
+        if(this.isMaximized) {
+            this.shadowPanel.close();
+        }
+    }
+
+    //家雄加
+    onPanelDock(node: DockNode){
+        //家雄加
+        this.dockAt = node;
+        if(this.isMaximized){
+            this.elementButtonMaximize.classList.remove('panel-titlebar-button-minimize');
+            this.elementButtonMaximize.classList.add('panel-titlebar-button-maximize');
+            this.isMaximized = false;
+            
+            if(!this._isMaximizeButtonClick && this.shadowPanel) {
+                this.shadowPanel.close();
+                this.tabPage.host.setActiveTab(this);
+            }
+        }
+    }
+
+    //家雄加
+    onMaximizeButtonClicked(e: Event){
+        e.preventDefault();
+        e.stopPropagation();
+
+        this._isMaximizeButtonClick = true;
+        let docM = this.dockManager;        
+        if(!this.isMaximized){
+            //紀錄之前是否為Dialog或Panel
+            this._previousIsDialog = this.isDialog;
+            //要記錄舊的長寬，之後變成Dialog時才不會變全Window Size
+            this._previousWidth = this.width;
+            this._previousHeight = this.height;
+
+            if(this.isDialog){
+                //若為Dialog則記錄原本的位置
+                this._previousPositon = this._floatingDialog.getPosition();
+
+                //To full screen
+                this._floatingDialog.setPosition(0, 0);
+            }else{
+                let el = document.createElement('div');
+                this.shadowPanel = new PanelContainer(el, docM, this.title + "(poped up)", PanelType.panel, true, true);
+                this.shadowPanel.canUndock(false);
+                this.dockAt = docM.dockFill(this.dockAt, this.shadowPanel);
+
+                this.tabPage.host.setActiveTab(this);
+
+                //To full screen
+                docM.floatDialog(this, 0, 0);
+            }
+            //Resize到全Window Size
+            this.resize(window.innerWidth, window.innerHeight);    
+
+            this.elementButtonMaximize.classList.remove('panel-titlebar-button-maximize');
+            this.elementButtonMaximize.classList.add('panel-titlebar-button-minimize');
+            this.isMaximized = true;
+        } else {
+            if(this.isDialog){
+                //還原成先前的大小
+                this.resize(this._previousWidth, this._previousHeight);
+                if (this._previousIsDialog) {
+                    //若先前為Dialog則賦歸為原本的位置
+                    this._floatingDialog.setPosition(this._previousPositon.x, this._previousPositon.y);
+                } else {
+                    this.dockAt = docM.dockDialogFill(this.dockAt, this._floatingDialog);
+
+                    //要先Active ShadowPanel後才能Close
+                    this.tabPage.host.setActiveTab(this.shadowPanel);
+                    //要Close前記得要先Active原本的Panel不然會抓不到高度內容會顯示不出來
+                    this.tabPage.host.setActiveTab(this);
+                    this.shadowPanel.close();
+                }
+
+                this.elementButtonMaximize.classList.remove('panel-titlebar-button-minimize');
+                this.elementButtonMaximize.classList.add('panel-titlebar-button-maximize');
+                this.isMaximized = false;
+            }
+        }
+        this.dockManager.notifyOnMaximizePanel(this);
+        this._isMaximizeButtonClick = false;
     }
 
     async close() {

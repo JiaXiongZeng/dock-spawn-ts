@@ -125,6 +125,7 @@ export declare class DockManager {
     notifyOnTabsReorder(dockNode: DockNode): void;
     notifyOnUnDock(dockNode: DockNode): void;
     notifyOnClosePanel(panel: PanelContainer): void;
+    notifyOnMaximizePanel(panel: PanelContainer): void;
     notifyOnCreateDialog(dialog: Dialog): void;
     notifyOnHideDialog(dialog: Dialog): void;
     notifyOnShowDialog(dialog: Dialog): void;

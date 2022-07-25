@@ -2,6 +2,7 @@ import { ContainerType } from "../ContainerType.js";
 import { DockManager } from "../DockManager.js";
 import { IState } from "./IState.js";
 import { TabPage } from '../TabPage.js';
+import { DockNode } from "../DockNode.js";
 
 export interface IDockContainer {
     readonly dockManager: DockManager;
@@ -17,6 +18,9 @@ export interface IDockContainer {
     readonly height: number;
     name: string;
     tabPage?: TabPage;
+
+    //家雄加
+    dockAt?: DockNode;
 
     /** 
      * Indicates the minimum allowed child nodes a composite dock panel can have

@@ -57,6 +57,72 @@
 	color: black;
 }
 
+/* 家雄新增最大化 */
+.panel-titlebar-button-maximize {
+	display: flex;
+    justify-content: flex-end;
+    align-items: center;
+	width: 25px;
+    height: 25px;
+    position: absolute;
+    right: 0;
+    top: 0;
+	margin-right: 17px;
+}
+
+.panel-titlebar-button-maximize::after {
+	float: right;
+	cursor: pointer;
+	padding-right: 8px;
+	content: '^';
+	font-weight: normal;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	display: flex;
+	height: 100%;
+	align-items: flex-end;
+}
+
+.panel-titlebar-button-close[style*='display: none']+.panel-titlebar-button-maximize {
+	margin-right: initial;
+}
+
+.panel-titlebar-button-maximize:hover {
+	color: black;
+}
+
+/*家雄新增縮回DockHost*/
+.panel-titlebar-button-minimize {
+	display: flex;
+    justify-content: flex-end;
+    align-items: center;
+	width: 25px;
+    height: 25px;
+    position: absolute;
+    right: 0;
+    top: 0;
+	margin-right: 17px;
+}
+
+.panel-titlebar-button-minimize::after {
+	float: right;
+	cursor: pointer;
+	padding-right: 8px;
+	content: 'v';
+	font-weight: normal;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	display: flex;
+	height: 100%;
+	align-items: center;
+}
+
+.panel-titlebar-button-close[style*='display: none']+.panel-titlebar-button-minimize {
+	margin-right: initial;
+}
+
+.panel-titlebar-button-minimize:hover {
+	color: black;
+}
+
 .panel-content {
 	width: 100%;
 	overflow: hidden;
@@ -304,7 +370,9 @@
 	float: left;
 	overflow: hidden;
 	cursor: pointer;
-	padding-right: 16px;
+	/*padding-right: 16px;*/
+	/* 家雄調整 */
+	padding-right: 25px;
 }
 
 .dockspan-tab-handle:hover {
@@ -346,6 +414,31 @@
 }
 
 .dockspan-tab-handle-close-button:hover {
+	color: black;
+}
+
+/* 家雄加 */
+.dockspan-tab-handle-maximize-button {}
+
+.dockspan-tab-handle-maximize-button::after {
+	margin-right: 15px;
+	float: right;
+	position: absolute;
+	right: 0;
+	content: '^';
+	font-weight: normal;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	cursor: pointer;
+	display: flex;
+	height: 100%;
+	align-items: flex-end;
+}
+
+.dockspan-tab-handle-close-button[style*='display: none']+.dockspan-tab-handle-maximize-button::after {
+	margin-right: 6px;
+}
+
+.dockspan-tab-handle-maximize-button:hover {
 	color: black;
 }
 

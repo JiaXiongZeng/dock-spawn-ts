@@ -46,12 +46,12 @@ window.onload = () => {
     };
     window.onresize(null);
 
-    dockManager.closePanelContainerCallback = async (panel) => {
-        let p = prompt("close?", " ")
-        if (p)
-            return true;
-        return false;
-    }
+    // dockManager.closePanelContainerCallback = async (panel) => {
+    //     let p = prompt("close?", " ")
+    //     if (p)
+    //         return true;
+    //     return false;
+    // }
 
     dockManager.addLayoutListener({
         onDock: (dockManager, dockNode) => {
@@ -106,7 +106,12 @@ window.onload = () => {
                 panel.elementContent.editor.refresh()
             }
             updateState();
-        }
+        },
+        onMaximizePanel: (dockManager, panel) => {
+            logOutput('onMaximizePanel(panel:' + panel?.title + ')');
+            localStorage.setItem(storeKey, dockManager.saveState());
+            updateState();
+        },
     });
 
     let properties;
@@ -122,7 +127,7 @@ window.onload = () => {
         let state = new PanelContainer(document.getElementById("state_window"), dockManager);
         let output = new PanelContainer(document.getElementById("output_window"), dockManager);
         let editor1 = new PanelContainer(document.getElementById("editor1_window"), dockManager, null, PanelType.document, false);
-        let editor2 = new PanelContainer(document.getElementById("editor2_window"), dockManager, null, PanelType.document, true);
+        let editor2 = new PanelContainer(document.getElementById("editor2_window"), dockManager, null, PanelType.document, true, true);
         //editor2.hideCloseButton(true);
         infovis = new PanelContainer(document.getElementById("infovis"), dockManager); // invisible Dialog has no size, so size it manually
         infovis.width = 600;

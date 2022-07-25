@@ -147,18 +147,21 @@ export class UndockInitiator {
     }
 
     onMouseMove(e: IMouseOrTouchEvent) {
-        if (e.touches) {
-            if (e.touches.length > 1)
-                return;
-            e = e.touches[0];
-        }
+        //家雄修正Bug，避免沒有enabled還可以做MouseMove
+        if(this.enabled){
+            if (e.touches) {
+                if (e.touches.length > 1)
+                    return;
+                e = e.touches[0];
+            }
 
-        let position = new Point(e.clientX, e.clientY);
-        let dy = position.y - this.dragStartPosition.y;
-        
-        if (dy > this.thresholdPixels || dy < -this.thresholdPixels) {
-            this.enabled = false;
-            this._requestUndock(e);
+            let position = new Point(e.clientX, e.clientY);
+            let dy = position.y - this.dragStartPosition.y;
+            
+            if (dy > this.thresholdPixels || dy < -this.thresholdPixels) {
+                this.enabled = false;
+                this._requestUndock(e);
+            }
         }
     }
 

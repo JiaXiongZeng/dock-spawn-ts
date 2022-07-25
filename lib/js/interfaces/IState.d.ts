@@ -7,4 +7,5 @@ export interface IState {
     canUndock?: boolean;
     hideCloseButton?: boolean;
     panelType?: PanelType;
+    hideMaximizeButton?: boolean;
 }

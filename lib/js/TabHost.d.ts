@@ -10,6 +10,7 @@ import { EventHandler } from './EventHandler.js';
  */
 export declare class TabHost {
     displayCloseButton: boolean;
+    displayMaximizeButton: boolean;
     dockManager: DockManager;
     tabStripDirection: TabHostDirection;
     hostElement: HTMLDivElement;
@@ -26,7 +27,7 @@ export declare class TabHost {
     _resizeRequested: boolean;
     mouseDownHandler: EventHandler;
     focusHandler: EventHandler;
-    constructor(dockManager: DockManager, tabStripDirection: TabHostDirection, displayCloseButton?: boolean);
+    constructor(dockManager: DockManager, tabStripDirection: TabHostDirection, displayCloseButton?: boolean, displayMaximizeButton?: boolean);
     onFocus(): void;
     setActive(isActive: boolean): void;
     onMousedown(): void;

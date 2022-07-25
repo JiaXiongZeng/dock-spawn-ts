@@ -23,6 +23,8 @@ export class DocumentManagerContainer extends FillDockContainer {
         this.element.classList.add('document-manager');
         this.tabHost.createTabPage = this._createDocumentTabPage;
         this.tabHost.displayCloseButton = true;
+        //家雄加
+        this.tabHost.displayMaximizeButton = true;
     }
 
     private _createDocumentTabPage(tabHost: TabHost, container: IDockContainer) {

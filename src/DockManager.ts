@@ -402,6 +402,9 @@ export class DockManager {
         dialog.destroy();
         layoutDockFunction(referenceNode, newNode);
         // this.invalidate();
+
+        //家雄加
+        panel.dockAt = newNode;
         return newNode;
     }
 
@@ -456,6 +459,9 @@ export class DockManager {
         this.invalidate();
 
         this._checkShowBackgroundContext();
+
+        //家雄加
+        container.dockAt = newNode;
 
         return newNode;
     }
@@ -624,6 +630,11 @@ export class DockManager {
             if (listener.onDock) {
                 listener.onDock(this, dockNode);
             }
+            
+            //家雄加 (不要放到上面的 if(listener.onDock) 內因為不一定會給onDock的Callback)
+            //因為不一定是按放大縮小，所以Panel需要知道何時OnDock用來關閉多餘的ShadowPanel
+            let panel = dockNode.container as PanelContainer;
+            panel.onPanelDock(dockNode);
         });
     }
 
@@ -656,6 +667,15 @@ export class DockManager {
         this.layoutEventListeners.forEach((listener) => {
             if (listener.onClosePanel) {
                 listener.onClosePanel(this, panel);
+            }
+        });
+    }
+
+    //家雄加
+    notifyOnMaximizePanel(panel: PanelContainer){
+        this.layoutEventListeners.forEach((listener) => {
+            if(listener.onMaximizePanel) {
+                listener.onMaximizePanel(this, panel);
             }
         });
     }

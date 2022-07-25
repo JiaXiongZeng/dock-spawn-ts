@@ -1,0 +1,36 @@
+for future reference :
+
+As of Babel version 7.0.0-beta.55 stage presets have been removed
+
+refer blog https://babeljs.io/blog/2018/07/27/removing-babels-stage-presets
+
+async await can be still be used by
+
+https://babeljs.io/docs/en/babel-plugin-transform-async-to-generator#usage
+
+---------------------------------------------------------------------------------------
+installation
+
+npm install --save-dev @babel/plugin-transform-async-to-generator
+
+---------------------------------------------------------------------------------------
+
+usage in .babelrc
+
+ { 
+     "presets": ["@babel/preset-env"],
+     "plugins": ["@babel/plugin-transform-async-to-generator"]
+ }
+and using babel polyfill https://babeljs.io/docs/en/babel-polyfill
+
+---------------------------------------------------------------------------------------
+installation
+
+npm install --save-dev @babel/polyfill
+
+---------------------------------------------------------------------------------------
+webpack.config.js
+
+module.exports = {
+  entry: ["@babel/polyfill", "./app/js"],
+};

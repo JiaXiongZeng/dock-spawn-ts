@@ -10,6 +10,7 @@ import { IDockContainer } from "./interfaces/IDockContainer.js";
 import { PanelType } from "./enums/PanelType.js";
 import { Dialog } from "./Dialog.js";
 import { TabPage } from './TabPage.js';
+import { DockNode } from "./DockNode.js";
 /**
  * This dock container wraps the specified element on a panel frame with a title bar and close button
  */
@@ -37,8 +38,13 @@ export declare class PanelContainer implements IDockContainerWithSize {
     eventListeners: any[];
     undockInitiator: UndockInitiator;
     elementButtonClose: HTMLDivElement;
+    elementButtonMaximize: HTMLDivElement;
     closeButtonClickedHandler: EventHandler;
     closeButtonTouchedHandler: EventHandler;
+    isMaximized: boolean;
+    shadowPanel: PanelContainer;
+    maximizeButtonClickedHandler: EventHandler;
+    maximizeButtonTouchedHandler: EventHandler;
     mouseDownHandler: EventHandler;
     touchDownHandler: EventHandler;
     panelType: PanelType;
@@ -50,7 +56,14 @@ export declare class PanelContainer implements IDockContainerWithSize {
     _cachedHeight: number;
     _hideCloseButton: boolean;
     _grayOut: HTMLDivElement;
-    constructor(elementContent: HTMLElement, dockManager: DockManager, title?: string, panelType?: PanelType, hideCloseButton?: boolean);
+    dockAt?: DockNode;
+    _hideMaximizeButton: boolean;
+    _previousPositon: Point;
+    _previousIsDialog: boolean;
+    _previousWidth: number;
+    _previousHeight: number;
+    _isMaximizeButtonClick: boolean;
+    constructor(elementContent: HTMLElement, dockManager: DockManager, title?: string, panelType?: PanelType, hideCloseButton?: boolean, hideMaximizeButton?: boolean);
     canUndock(state: boolean): void;
     addListener(listener: any): void;
     removeListener(listener: any): void;
@@ -65,6 +78,7 @@ export declare class PanelContainer implements IDockContainerWithSize {
     _initialize(): void;
     onMouseDown(): void;
     hideCloseButton(state: boolean): void;
+    hideMaximizeButton(state: boolean): void;
     destroy(): void;
     /**
      * Undocks the panel and and converts it to a dialog box
@@ -94,5 +108,7 @@ export declare class PanelContainer implements IDockContainerWithSize {
     getRawTitle(): string;
     performLayout(children: IDockContainer[], relayoutEvenIfEqual: boolean): void;
     onCloseButtonClicked(e: Event): void;
+    onPanelDock(node: DockNode): void;
+    onMaximizeButtonClicked(e: Event): void;
     close(): Promise<void>;
 }

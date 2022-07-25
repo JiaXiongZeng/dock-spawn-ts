@@ -19,6 +19,24 @@
 	color:red;
 }
 
+/* 家雄新增最大化 */
+.panel-titlebar-button-maximize {
+	color:#aaa;
+}
+
+.panel-titlebar-button-maximize:hover {
+	color:red;
+}
+
+/* 家雄新增縮回DockHost */
+.panel-titlebar-button-minimize {
+	color:#aaa;
+}
+
+.panel-titlebar-button-minimize:hover {
+	color:red;
+}
+
 .panel-content {
 	background-color: #FFF;
     overflow: auto;
@@ -155,6 +173,14 @@
 }
 
 .dockspan-tab-handle-close-button:hover {
+	color: red;
+}
+
+/*家雄加*/
+.dockspan-tab-handle-maximize-button{
+}
+
+.dockspan-tab-handle-maximize-button:hover {
 	color: red;
 }
 

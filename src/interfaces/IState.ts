@@ -8,4 +8,6 @@ export interface IState {
     canUndock?: boolean;
     hideCloseButton?: boolean;
     panelType?: PanelType;
+    //家雄加
+    hideMaximizeButton?: boolean;
 }

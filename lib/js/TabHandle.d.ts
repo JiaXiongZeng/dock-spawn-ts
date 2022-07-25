@@ -10,6 +10,7 @@ export declare class TabHandle {
     elementBase: HTMLDivElement;
     elementText: HTMLDivElement;
     elementCloseButton: HTMLDivElement;
+    elementMaximizeButton: HTMLDivElement;
     undockInitiator: UndockInitiator;
     mouseDownHandler: EventHandler;
     touchDownHandler: EventHandler;
@@ -17,6 +18,9 @@ export declare class TabHandle {
     closeButtonTouchHandler: EventHandler;
     auxClickHandler: EventHandler;
     contextMenuHandler: EventHandler;
+    maximizeButtonHandler: EventHandler;
+    maximizeButtonTouchHandler: EventHandler;
+    doubleClickHandler: EventHandler;
     zIndexCounter: number;
     mouseMoveHandler: EventHandler;
     touchMoveHandler: EventHandler;
@@ -28,6 +32,7 @@ export declare class TabHandle {
     undockListener: {
         onDockEnabled: (e: any) => void;
         onHideCloseButton: (e: any) => void;
+        onHideMaximizeButton: (e: any) => void;
     };
     prev: number;
     current: number;
@@ -47,10 +52,13 @@ export declare class TabHandle {
     moveTabEvent(that: any, state: any): void;
     onMouseMove(e: any): void;
     hideCloseButton(state: any): void;
+    hideMaximizeButton(state: any): void;
+    onDoubleClicked(e: MouseEvent): void;
     updateTitle(): void;
     destroy(): void;
     _performUndock(e: any, dragOffset: any): import("./Dialog.js").Dialog;
     onCloseButtonClicked(e: any): void;
+    onMaximizeButtonClicked(e: any): void;
     setSelected(isSelected: boolean): void;
     setActive(isActive: boolean): void;
     setZIndex(zIndex: number): void;
