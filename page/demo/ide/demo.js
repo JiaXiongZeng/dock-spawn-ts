@@ -21,7 +21,9 @@ window.onload = () => {
 
     let divDockContainer = document.getElementById('dock_div');
     let divDockManager = document.getElementById('my_dock_manager');
-    dockManager = new DockManager(divDockManager);
+    dockManager = new DockManager(divDockManager, {
+        dialogRootElement: divDockContainer
+    });
     //@ts-ignore
     window.dockManager = dockManager;
     dockManager.initialize();
@@ -143,7 +145,7 @@ window.onload = () => {
         dockManager.dockRight(documentNode, toolbox, 0.20);
         dockManager.dockFill(documentNode, editor1);
         dockManager.dockFill(documentNode, editor2);
-        dockManager.floatDialog(infovis, 50, 50);
+        dockManager.floatDialog(infovis, dockManager.config.dialogRootElement.offsetLeft + 50, dockManager.config.dialogRootElement.offsetTop + 50);
     }
 
     document.getElementById("dlg").onclick = () => {

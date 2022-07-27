@@ -69,10 +69,16 @@ export class Dialog {
     }
 
     setPosition(x: number, y: number) {
-        let rect = this.dockManager.config.dialogRootElement.getBoundingClientRect();
-        this.position = new Point(x - rect.left, y - rect.top);
-        this.elementDialog.style.left = (x - rect.left) + 'px';
-        this.elementDialog.style.top = (y - rect.top) + 'px';
+        // 這是原作者的寫法，但發現會跑版
+        // let rect = this.dockManager.config.dialogRootElement.getBoundingClientRect();
+        // this.position = new Point(x - rect.left, y - rect.top);
+        // this.elementDialog.style.left = (x - rect.left) + 'px';
+        // this.elementDialog.style.top = (y - rect.top) + 'px';
+        // this.dockManager.notifyOnChangeDialogPosition(this, x, y);
+
+        this.position = new Point(x, y);
+        this.elementDialog.style.left = x + 'px';
+        this.elementDialog.style.top = y + 'px';
         this.dockManager.notifyOnChangeDialogPosition(this, x, y);
     }
 

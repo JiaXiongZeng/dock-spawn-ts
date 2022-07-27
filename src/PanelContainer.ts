@@ -476,14 +476,26 @@ export class PanelContainer implements IDockContainerWithSize {
         //家雄加
         this.dockAt = node;
         if(this.isMaximized){
+            //檢查是否又被移到跟ShadowPanel一樣的Container
+            let isLocateInSameContainer = 
+            (node.parent.container == this.shadowPanel.dockAt.parent.container);
+            
+            if(!this._isMaximizeButtonClick && this.shadowPanel) {
+                if(isLocateInSameContainer){
+                    //要先Active ShadowPanel後才能Close
+                    this.tabPage.host.setActiveTab(this.shadowPanel);
+                    //要Close前記得要先Active原本的Panel不然會抓不到高度內容會顯示不出來
+                    this.tabPage.host.setActiveTab(this);
+                    this.shadowPanel.close();
+                }else{
+                    this.shadowPanel.close();
+                    this.tabPage.host.setActiveTab(this);
+                }
+            }
+
             this.elementButtonMaximize.classList.remove('panel-titlebar-button-minimize');
             this.elementButtonMaximize.classList.add('panel-titlebar-button-maximize');
             this.isMaximized = false;
-            
-            if(!this._isMaximizeButtonClick && this.shadowPanel) {
-                this.shadowPanel.close();
-                this.tabPage.host.setActiveTab(this);
-            }
         }
     }
 
@@ -501,12 +513,19 @@ export class PanelContainer implements IDockContainerWithSize {
             this._previousWidth = this.width;
             this._previousHeight = this.height;
 
+            //從DialogRoot中取得Position
+            let rootElem = this.dockManager.config.dialogRootElement;
+            let rootX = rootElem.offsetLeft;
+            let rootY = rootElem.offsetTop;
+            let rootWidth = rootElem.offsetWidth;
+            let rootHeight = rootElem.offsetHeight;
+
             if(this.isDialog){
                 //若為Dialog則記錄原本的位置
                 this._previousPositon = this._floatingDialog.getPosition();
 
                 //To full screen
-                this._floatingDialog.setPosition(0, 0);
+                this._floatingDialog.setPosition(rootX, rootY);
             }else{
                 let el = document.createElement('div');
                 this.shadowPanel = new PanelContainer(el, docM, this.title + "(poped up)", PanelType.panel, true, true);
@@ -516,10 +535,10 @@ export class PanelContainer implements IDockContainerWithSize {
                 this.tabPage.host.setActiveTab(this);
 
                 //To full screen
-                docM.floatDialog(this, 0, 0);
+                docM.floatDialog(this, rootX, rootY);
             }
             //Resize到全Window Size
-            this.resize(window.innerWidth, window.innerHeight);    
+            this.resize(rootWidth, rootHeight);    
 
             this.elementButtonMaximize.classList.remove('panel-titlebar-button-maximize');
             this.elementButtonMaximize.classList.add('panel-titlebar-button-minimize');
